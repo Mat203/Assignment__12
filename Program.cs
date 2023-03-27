@@ -105,3 +105,73 @@ public class LinkedList
             }
         }
     }
+
+
+public class StringsDictionary<TKey, TValue>
+{
+    private const int InitialSize = 10;
+
+    private LinkedList<KeyValuePair<TKey, TValue>>[] buckets;
+    int CalculateHash(string key)
+    {
+        int hash = 0;
+        foreach (char c in key)
+        {
+            hash += (int)c;
+        }
+        return hash;
+    }
+    void Get(string key)
+    {
+        int bucketIndex = CalculateHash(key);
+        if (buckets[bucketIndex] != null)
+        {
+            {
+                foreach (KeyValuePair<TKey, TValue> pair in buckets[bucketIndex])
+                {
+                    if (pair.Key.Equals(key))
+                    {
+                        var value = pair.Value;
+                        return;
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    public void Add(TKey key, TValue value)
+    {
+        int bucketIndex = Get(key);
+        if (buckets[bucketIndex] == null)
+        {
+            buckets[bucketIndex] = new LinkedList<KeyValuePair<TKey, TValue>>();
+        }
+
+        foreach (KeyValuePair<TKey, TValue> pair in buckets[bucketIndex])
+        {
+            if (pair.Key.Equals(key))
+            {
+                throw new ArgumentException("An element with the same key already exists in the dictionary.");
+            }
+
+            buckets[bucketIndex].AddLast(new KeyValuePair<TKey, TValue>(key, value));
+        }
+
+        void Remove(string key)
+        {
+
+        }
+
+        
+        int Index(TKey key)
+        {
+            int hash = key.GetHashCode();
+            return hash % buckets.Length;
+        }
+
+        
+    }
+    
+}
