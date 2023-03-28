@@ -143,7 +143,7 @@ public class StringsDictionary<TKey, TValue>
 
     public void Add(TKey key, TValue value)
     {
-        int bucketIndex = Get(key);
+        int bucketIndex = CalculateHash(key.ToString());
         if (buckets[bucketIndex] == null)
         {
             buckets[bucketIndex] = new LinkedList<KeyValuePair<TKey, TValue>>();
