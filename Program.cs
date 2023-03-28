@@ -1,4 +1,17 @@
-﻿static void Main()
+﻿
+//static void Main()
+    //{
+       // StringsDictionary<string, int> dictionary = new StringsDictionary<string, int>();
+
+        //dictionary.Add("one", 1);
+        //dictionary.Add("two", 2);
+        //dictionary.Add("three", 3);
+
+        //int value = dictionary.GetValue("two");
+        //Console.WriteLine("Value for key 'two': {0}", value);
+    //}
+//Main(); 
+static void Main()
 {
     LinkedList list = new LinkedList();
     list.Add(new KeyValuePair("apple", "red"));
@@ -17,6 +30,12 @@
 }
 
 Main();
+
+
+
+
+
+
 public class KeyValuePair
     {
         public string Key { get; }
@@ -111,39 +130,38 @@ public class StringsDictionary<TKey, TValue>
 {
     private const int InitialSize = 10;
     private int count;
+    private LinkedList<KeyValuePair<TKey, TValue>>[] buckets = new LinkedList<KeyValuePair<TKey, TValue>>[InitialSize];
 
-    private LinkedList<KeyValuePair<TKey, TValue>>[] buckets;
-    int GetHashCode(string key)
+    public int GetHashCode(string key)
     {
         int hash = 0;
         foreach (char c in key)
         {
             hash += (int)c;
         }
+
         return hash;
     }
-    void Get(string key)
+
+    public TValue GetValue(TKey key)
     {
-        int bucketIndex = GetHashCode(key);
+        int bucketIndex = Index(key);
         if (buckets[bucketIndex] != null)
         {
+            foreach (KeyValuePair<TKey, TValue> pair in buckets[bucketIndex])
             {
-                foreach (KeyValuePair<TKey, TValue> pair in buckets[bucketIndex])
+                if (pair.Key.Equals(key))
                 {
-                    if (pair.Key.Equals(key))
-                    {
-                        var value = pair.Value;
-                        return;
-                    }
-
+                    return pair.Value;
                 }
             }
         }
-
+        throw new KeyNotFoundException("The given key was not present in the dictionary.");
     }
+
     public void Add(TKey key, TValue value)
     {
-        int bucketIndex = GetHashCode(key.ToString());
+        int bucketIndex = Index(key);
         if (buckets[bucketIndex] == null)
         {
             buckets[bucketIndex] = new LinkedList<KeyValuePair<TKey, TValue>>();
@@ -155,11 +173,10 @@ public class StringsDictionary<TKey, TValue>
             {
                 throw new ArgumentException("An element with the same key already exists in the dictionary.");
             }
-
-            buckets[bucketIndex].AddLast(new KeyValuePair<TKey, TValue>(key, value));
-            count++;
         }
 
+        buckets[bucketIndex].AddLast(new KeyValuePair<TKey, TValue>(key, value));
+        count++;
     }
 
     public bool Remove(TKey key)
@@ -175,6 +192,10 @@ public class StringsDictionary<TKey, TValue>
                 {
                     bucket.Remove(node);
                     count--;
+                    if (bucket.Count == 0)
+                    {
+                        buckets[bucketIndex] = null;
+                    }
                     return true;
                 }
             }
@@ -183,12 +204,11 @@ public class StringsDictionary<TKey, TValue>
         return false;
     }
 
-
     int Index(TKey key)
     {
-        int hash = key.GetHashCode();
-        return hash % InitialSize;
+        int hash = (key is string strKey) ? GetHashCode(strKey) : key.GetHashCode();
+        int bucketIndex = hash % InitialSize;
+        return bucketIndex;
     }
-
-    
 }
+
