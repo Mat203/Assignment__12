@@ -110,9 +110,10 @@ public class LinkedList
 public class StringsDictionary<TKey, TValue>
 {
     private const int InitialSize = 10;
+    private int count;
 
     private LinkedList<KeyValuePair<TKey, TValue>>[] buckets;
-    int CalculateHash(string key)
+    int GetHashCode(string key)
     {
         int hash = 0;
         foreach (char c in key)
@@ -123,7 +124,7 @@ public class StringsDictionary<TKey, TValue>
     }
     void Get(string key)
     {
-        int bucketIndex = CalculateHash(key);
+        int bucketIndex = GetHashCode(key);
         if (buckets[bucketIndex] != null)
         {
             {
@@ -140,10 +141,9 @@ public class StringsDictionary<TKey, TValue>
         }
 
     }
-
     public void Add(TKey key, TValue value)
     {
-        int bucketIndex = CalculateHash(key.ToString());
+        int bucketIndex = GetHashCode(key.ToString());
         if (buckets[bucketIndex] == null)
         {
             buckets[bucketIndex] = new LinkedList<KeyValuePair<TKey, TValue>>();
@@ -157,21 +157,38 @@ public class StringsDictionary<TKey, TValue>
             }
 
             buckets[bucketIndex].AddLast(new KeyValuePair<TKey, TValue>(key, value));
+            count++;
         }
 
-        void Remove(string key)
-        {
-
-        }
-
-        
-        int Index(TKey key)
-        {
-            int hash = key.GetHashCode();
-            return hash % buckets.Length;
-        }
-
-        
     }
+
+    public bool Remove(TKey key)
+    {
+        int bucketIndex = Index(key);
+        if (buckets[bucketIndex] != null)
+        {
+            LinkedList<KeyValuePair<TKey, TValue>> bucket = buckets[bucketIndex];
+
+            for (LinkedListNode<KeyValuePair<TKey, TValue>>? node = bucket.First; node != null; node = node.Next)
+            {
+                if (node.Value.Key.Equals(key))
+                {
+                    bucket.Remove(node);
+                    count--;
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+
+    int Index(TKey key)
+    {
+        int hash = key.GetHashCode();
+        return hash % InitialSize;
+    }
+
     
 }
