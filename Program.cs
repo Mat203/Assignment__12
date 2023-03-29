@@ -1,40 +1,27 @@
-﻿
-//static void Main()
-    //{
-       // StringsDictionary<string, int> dictionary = new StringsDictionary<string, int>();
-
-        //dictionary.Add("one", 1);
-        //dictionary.Add("two", 2);
-        //dictionary.Add("three", 3);
-
-        //int value = dictionary.GetValue("two");
-        //Console.WriteLine("Value for key 'two': {0}", value);
-    //}
-//Main(); 
-static void Main()
+﻿static void Main()
 {
-    LinkedList list = new LinkedList();
-    list.Add(new KeyValuePair("apple", "red"));
-    list.Add(new KeyValuePair("banana", "yellow"));
-    list.Add(new KeyValuePair("orange", "orange"));
-
-
-    list.Print();
-    list.RemoveByKey("banana");
-    
-    Console.WriteLine("Linked list after remove");
-    list.Print();
-
-    KeyValuePair orangePair = list.GetItemWithKey("orange");
-    Console.WriteLine($"Orange pair: {orangePair.Value}");
+    StringsDictionary<string, string> dictionary = new StringsDictionary<string, string>();
+    foreach (var line in File.ReadAllLines("dict.txt"))
+    {
+        string[] elements = line.Split("; ");
+        string key = elements[0];
+        string value = String.Join("; ", elements[1..]);
+        dictionary.Add(key, value);
+    }
+    while (true)
+    {
+        Console.Write("Write a word or /break to stop: ");
+        string user_key = Console.ReadLine();
+        if (user_key == "/break")
+        {
+            break;
+        }
+        string user_value = dictionary.GetValue(user_key);
+        Console.WriteLine(user_value);
+    }
 }
 
 Main();
-
-
-
-
-
 
 public class KeyValuePair
     {
